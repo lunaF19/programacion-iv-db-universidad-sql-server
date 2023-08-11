@@ -16,7 +16,13 @@ ADD CONSTRAINT PK_cat_suscriptions_status
 PRIMARY KEY (id);
 
 
-
+/*
+	Catalogo donde se guardarán las modalidades 
+	en las que se podrán dar las clases
+	Ejemplo:
+	 - Virtual
+	 - Presencial
+*/
 CREATE TABLE cat_modality(
 	id CHAR(5) NOT NULL,
 	[name] VARCHAR(20),
@@ -27,6 +33,17 @@ ALTER TABLE cat_modality
 ADD CONSTRAINT PK_cat_modality
 PRIMARY KEY (id);
 
+
+/*
+	Catalogo de categorías academicas, donde se guardaran las diferentes 
+	categorías academicas.
+	Ejemplo: 
+	 - Bachillerato
+	 - Licenciatura
+	 - Postgrados
+	 - Cursos Libres
+	 - Diplomas
+*/
 CREATE TABLE cat_academic_category (
 	id CHAR(5) NOT NULL,
 	[name] VARCHAR(20),
@@ -37,6 +54,15 @@ ALTER TABLE cat_academic_category
 ADD CONSTRAINT PK_cat_academic_category
 PRIMARY KEY(id);
 
+
+
+/*
+	Catalogo donde se guardaran los diferentes periodos 
+	en los que se organizar los cursos.
+	Ejemplo:
+	 - Cuatrimestre
+	 - Trimestre
+*/
 CREATE TABLE cat_academic_periods(
 	id CHAR(5) NOT NULL,
 	[name] VARCHAR(20),
@@ -46,7 +72,16 @@ ALTER TABLE cat_academic_periods
 ADD CONSTRAINT PK_cat_academic_periods
 PRIMARY KEY(id);
 
--- Catalog of courses
+
+/*
+	Catalogo de cursos, donde se guardarán datos
+	tales como las "clases" que se pueden llegar a dar
+	en el curso.
+	Ejemplo:
+	 - Matematicas I
+	 - Ingles I
+	 - Ingles II
+*/ 
 CREATE TABLE cat_courses(
     [code] CHAR(10) NOT NULL,
     [name] VARCHAR(100) NOT NULL,
@@ -59,10 +94,20 @@ CREATE TABLE cat_courses(
     -- SemesterOffered VARCHAR(50),
     --YearOffered INT
 );
+
 ALTER TABLE cat_courses
 ADD CONSTRAINT PK_cat_courses
 PRIMARY KEY (code);
 
+
+/*
+	Catalogo de carreras, donde se guardarán todas
+	las carreras ofrecidas por la universidad.
+	Ejemplo:
+	 - Ing. Informatica
+	 - Contbilidad
+	 - Administracion de empresas
+*/
 -- All careers of university
 CREATE TABLE cat_career(
 	[code] CHAR(10)  NOT NULL,
@@ -75,7 +120,17 @@ ALTER TABLE cat_career
 ADD CONSTRAINT PK_cat_career
 PRIMARY KEY (code);
 
--- All courses by carrer 
+
+/*
+	Catalogo de cursos por carrera, donde se guardara una relacion
+	entre la carrera y el curso.
+	Ejemplo:
+	 - Ing. Informatica --> Matematicas I
+	 - Adm. Empresas    --> Matematicas I
+	 - Ing. Informatica --> Programación I
+	 - Ing. Informatica --> Ingles I
+	 - Adm. Empresas    --> Ingles I
+*/ 
 CREATE TABLE cat_courses_x_career(
 	id INT NOT NULL UNIQUE,
 	[code_career] CHAR(10)  NOT NULL,
@@ -95,6 +150,15 @@ FOREIGN KEY ([code_course])
 REFERENCES cat_courses([code]);
 
 
+
+/*
+	Tabla donde se guardarán todos los roles disponibles
+	Ejemplo:
+	 - Administrador
+	 - Profesor
+	 - Estudiante
+*/
+
 -- All roles of DB
 CREATE TABLE roles (
 id CHAR(5) NOT NULL,
@@ -107,6 +171,10 @@ ADD CONSTRAINT PK_roles
 PRIMARY KEY(id);
 
 
+
+/*
+	Tabla donde se guardaran todos los usuarios del sistema
+*/
 -- All users
 CREATE TABLE users (
 	id INT NOT NULL,
@@ -117,6 +185,16 @@ ALTER TABLE users
 ADD CONSTRAINT PK_users
 PRIMARY KEY (id);
 
+
+/*
+	Tabla de roles por usuario, donde se guardara los roles 
+	con los que cuenta cada usuario.
+	Ejemplo:
+	- User1 --> Administrador
+	- User1 --> Profesor
+	- User2 --> Estudiante
+
+*/
 -- Role X User
 CREATE TABLE roles_user (
 	id_user INT NOT NULL,
@@ -136,6 +214,10 @@ FOREIGN KEY (id_role)
 REFERENCES roles(id);
 
 
+
+/*
+	Tabla donde se almacenaran los correos de los usuarios.
+*/
 -- Emails of user
 CREATE TABLE user_emails (
 	id_user INT NOT NULL,
@@ -151,7 +233,10 @@ CONSTRAINT FK_user_emails__users
 FOREIGN KEY (id_user)
 REFERENCES users(id);
 
+/*
+	Tabla donde se guardara la información de login de los usuarios.
 
+*/
 -- Tabla para login 
 CREATE TABLE login_user (
 	id_user INT NOT NULL,
@@ -171,7 +256,9 @@ CONSTRAINT FK_login_user__users
 FOREIGN KEY (id_user)
 REFERENCES users(id);
 
-
+/*
+	Tabla donde se alamacenara los planes de estudio disponibles.
+*/
 CREATE TABLE study_plan(
 	id INT NOT NULL,
 	id_academic_category CHAR(5) NOT NULL,
@@ -187,7 +274,10 @@ CONSTRAINT FK01_study_plan__cat_academic_category
 FOREIGN KEY  (id_academic_category)
 REFERENCES cat_academic_category(id);
 
-
+/*
+	Tabla donde se almacenará la relacion entre 
+	el plan de estudio y los cursos que se llevaran.
+*/
 CREATE TABLE study_plan_courses(
 	id_study_plan INT NOT NULL,
 	course_code INT NOT NULL,
@@ -210,7 +300,13 @@ FOREIGN KEY (course_code)
 REFERENCES cat_courses_x_career(id)
 ;
 
+/*
+	Tabla donde se almacenarán los datos sobre los periodos de estudio
+	Ejemplo:
+		1 - Cuatrimestre - 10/09/2023 - 15/12/2023 - Matricula Abierta
+		2 - Cuatrimestre -  15/04/2023 - 10/09/2023 - Concluido
 
+*/
 CREATE TABLE [periods](
 	id INT NOT NULL,
 	id_cat_period CHAR(5) NOT NULL,
@@ -229,7 +325,11 @@ FOREIGN KEY (id_cat_period)
 REFERENCES cat_academic_periods(id);
 
 
+/*
+	Tabla donde se almacenara el detalle de los cursos 
+	que se llevarán acabo en ese periodo de estudio.
 
+*/
 CREATE TABLE periods_courses (
 	id INT NOT NULL UNIQUE,
 	id_periods INT NOT NULL ,
@@ -267,7 +367,13 @@ CONSTRAINT FK04_periods_courses__cat_modality
 FOREIGN KEY (modality)
 REFERENCES cat_modality(id);
 
+/*
+	Tabla de las suscripciones que se llevarón acabo en los
+	cursos correspondientes al periodo de estudio.
+	En esta tabla se almacenarán datos relevantes tales como el estudiante
+	relacionado este con la nota que obtuvo y el status(matriculado,aprobado,etc)
 
+*/
 CREATE TABLE periods_courses_suscriptions(
 	id INT NOT NULL UNIQUE, -- SACAR PARA LAS NOTAS
 	id_periods_courses INT NOT NULL,
@@ -278,7 +384,7 @@ CREATE TABLE periods_courses_suscriptions(
 );
 
 ALTER TABLE periods_courses_suscriptions
-ADD CONSTRAINT PK_
+ADD CONSTRAINT PK_periods_courses_suscriptions
 PRIMARY KEY(id_periods_courses,student_id),
 --
 CONSTRAINT FK01_periods_courses_suscriptions__users
