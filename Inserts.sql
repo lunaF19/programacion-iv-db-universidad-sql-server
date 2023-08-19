@@ -230,9 +230,7 @@ VALUES
 (29, '2023-08-19 14:30:00', 'John', 'Brown', 'M', '1997-11-19', '2023-08-12 11:20:00', '2023-08-19 14:30:00'),
 (30, '2023-08-18 10:50:00', 'Emily', 'Miller', 'F', '1984-06-09', '2023-08-07 14:45:00', '2023-08-18 10:50:00');
 
-
-
-select * from users
+ 
 
 CREATE OR ALTER PROCEDURE P_AddRolesToUser
 AS 
@@ -245,8 +243,7 @@ AS
 	DECLARE @Lv_id_role CHAR(5);
 	
 BEGIN
-	
-	
+
 	DELETE roles_user;
 	 
 	-- Open Cursor c_users
@@ -269,7 +266,7 @@ BEGIN
 			INTO @Lv_id_role;
 
 
-			-- Para cursor c_users
+			-- Para cursor c_roles
 			 WHILE @@FETCH_STATUS = 0  
 				BEGIN 
 
@@ -285,8 +282,11 @@ BEGIN
 					INTO @Lv_id_role;
 				END;
 
-			CLOSE c_users  
-			DEALLOCATE c_users  
+			CLOSE c_roles  
+			DEALLOCATE c_roles  
+			
+			FETCH NEXT FROM c_users 
+			INTO @Ln_user_id;
 
 		END
 	CLOSE c_users  
@@ -294,6 +294,115 @@ BEGIN
 END;
 
 SELECT * FROM USERS
-WHERE CAST(RAND() * 2 AS INT) + 1 = 2
+EXEC P_AddRolesToUser;
+SELECT * FROM roles_user;
+ 
 
-select CAST(RAND() * 2 AS INT) + 1 
+
+
+
+
+
+ 
+CREATE OR ALTER PROCEDURE P_GenerateStudyPlans
+AS 
+	-- SELECT * FROM cat_career
+	DECLARE c_cat_career CURSOR FOR 
+	SELECT [code], [name], [description]
+	FROM cat_career
+	WHERE [status] = 1;
+
+
+	DECLARE @Ln_id_courses_x_career INT;
+	DECLARE @Lv_career_code CHAR(10);
+	DECLARE  @Lv_name_career VARCHAR(100);
+	DECLARE  @Lv_decription_career VARCHAR(400);
+
+
+	DECLARE @Ln_id_study_plan INT;
+	DECLARE @Lv_id_academic_category CHAR(5);
+	DECLARE @Lv_title_study_plan VARCHAR(30);
+	DECLARE @Lv_description_study_plan VARCHAR(400);
+
+	DECLARE @Ln_user_id INT;
+	DECLARE @Lv_id_role CHAR(5);
+	
+BEGIN
+	DELETE study_plan_courses;
+	DELETE study_plan;
+
+
+	-- Open Cursor c_cat_career
+	OPEN c_cat_career
+    FETCH NEXT FROM c_cat_career 
+	INTO @Lv_career_code, @Lv_name_career, @Lv_decription_career;
+
+
+	-- Para cursor c_cat_career
+	WHILE @@FETCH_STATUS = 0  
+		BEGIN 
+			SET @Lv_id_academic_category = 'AC003'; -- Universitario
+			SET @Lv_title_study_plan = SUBSTRING(@Lv_name_career,0,30);
+			SET @Lv_description_study_plan = SUBSTRING(@Lv_decription_career,0,30);
+			--select * from cat_courses_x_career 
+
+
+			-- Cursor para los cursos relacionados con la carrera
+			DECLARE cat_courses_x_career CURSOR FOR
+			Select id
+			From cat_courses_x_career
+			Where code_career = @Lv_career_code;
+
+			SELECT @Ln_id_study_plan = ISNULL(MAX(ID),0)+1 
+			FROM study_plan;
+			-- Se inserta el plan de estudio
+			INSERT INTO study_plan( id , id_academic_category,title, [description],create_at  )
+			VALUES (@Ln_id_study_plan,@Lv_id_academic_category, @Lv_title_study_plan, @Lv_description_study_plan, GETDATE() );
+			 
+			-- Se debe insertar el detalle del plan de estudio
+
+			OPEN cat_courses_x_career
+			FETCH NEXT FROM cat_courses_x_career 
+			INTO @Ln_id_courses_x_career;
+
+			-- Para cursor cat_courses_x_career
+			WHILE @@FETCH_STATUS = 0  
+				BEGIN 
+					DECLARE @Ln_credits INT;
+
+					SET @Ln_credits = CAST(RAND() * 4 AS INT) + 1;
+
+					INSERT INTO study_plan_courses( id_study_plan, course_code, [block], [order], create_at, credits )
+					VALUES (
+						@Ln_id_study_plan,
+						@Ln_id_courses_x_career,
+						0, -- [block]
+						0, --[order]
+						GETDATE(),--create_at
+						@Ln_credits-- credits
+					);
+
+					FETCH NEXT FROM cat_courses_x_career 
+					INTO @Ln_id_courses_x_career;
+				END;
+
+
+			CLOSE cat_courses_x_career  
+			DEALLOCATE cat_courses_x_career  
+
+
+
+			-- Se pide el siguiente de c_cat_career
+			FETCH NEXT FROM c_cat_career 
+			INTO @Lv_career_code, @Lv_name_career, @Lv_decription_career;
+		END;
+	CLOSE c_cat_career  
+    DEALLOCATE c_cat_career  
+
+END;
+ 
+
+EXEC P_GenerateStudyPlans;
+
+SELECT * FROM study_plan_courses;
+SELECT * FROM study_plan;
