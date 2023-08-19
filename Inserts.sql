@@ -546,3 +546,112 @@ exec P_GeneratePeriodsCourses;
 SELECT * FROM [periods]
 SELECT * FROM [periods_courses]
 
+
+CREATE OR ALTER PROCEDURE P_GeneratePeriodsCoursesSuscriptions
+AS 
+	DECLARE c_periods CURSOR FOR
+	Select id
+	From [periods_courses]
+	;
+
+	DECLARE @Ln_id_period INT;
+	DECLARE @Ln_id_periods_courses INT;
+	
+BEGIN
+	DELETE periods_courses_suscriptions;
+
+	-- SELECT * FROM periods_courses_suscriptions;
+
+
+	OPEN c_periods
+	FETCH c_periods
+	INTO @Ln_id_periods_courses;
+
+	-- Para cursor c_periods
+	WHILE @@FETCH_STATUS = 0  
+
+		BEGIN
+			DECLARE @Ln_id_suscription INT; 
+			DECLARE @Ln_id_student_id INT;
+			DECLARE @Ln_status_suscription CHAR(5);
+			DECLARE @Ld_create_at DATETIME = GETDATE();
+			DECLARE @Ld_modified_at DATETIME = GETDATE();
+			DECLARE @Ln_score INT = 0 ;
+			DECLARE @Ln_insert_ind INT;
+
+			DECLARE c_studentes CURSOR FOR
+			Select id 
+			From Users
+			Where [dbo].F_UserHasRole(id, 'STUDEN') = 1;
+
+			OPEN c_studentes
+			FETCH c_studentes
+			INTO @Ln_id_student_id;
+
+			-- Para cursor c_studentes
+			WHILE @@FETCH_STATUS = 0  
+				BEGIN 
+
+					SET @Ln_insert_ind = CAST(RAND() * 3 AS INT) + 1;
+					IF (@Ln_insert_ind = 3)
+
+						BEGIN
+							Select  @Ln_id_suscription = ISNULL(MAX(ID),0)+1
+							From [periods_courses_suscriptions];
+
+							Select @Ln_status_suscription = ID
+							From V_RandomSuscriptionStatus;
+
+							IF (@Ln_status_suscription = 'C')
+								SET @Ln_score = CAST(RAND() * 60 AS INT) + 1;
+							ELSE
+								SET @Ln_score = CAST(RAND() * 100 AS INT) + 1;
+								
+							INSERT INTO [dbo].[periods_courses_suscriptions]
+									([id]
+									,[id_periods_courses]
+									,[student_id]
+									,[status]
+									,[create_at]
+									,[modified_at]
+									,[score])
+								VALUES
+									(@Ln_id_suscription
+									,@Ln_id_periods_courses
+									,@Ln_id_student_id
+									,@Ln_status_suscription 
+									,@Ld_create_at
+									,@Ld_modified_at
+									,@Ln_score);
+						END;
+
+					FETCH c_studentes
+					INTO @Ln_id_student_id;
+				END;
+
+			CLOSE c_studentes  
+			DEALLOCATE c_studentes   
+
+			FETCH c_periods
+			INTO @Ln_id_periods_courses;
+		END
+
+	CLOSE c_periods  
+	DEALLOCATE c_periods   
+
+	UPDATE periods_courses_suscriptions 
+	SET [status] = 'A'
+	WHERE SCORE >= 70; 
+
+
+	UPDATE periods_courses_suscriptions 
+	SET [status] = 'R'
+	WHERE SCORE < 70; 
+
+
+END;
+
+
+EXEC P_GeneratePeriodsCoursesSuscriptions;
+select * from periods_courses_suscriptions
+ 
