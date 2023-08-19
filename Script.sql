@@ -392,10 +392,12 @@ CREATE TABLE periods_courses_suscriptions(
 	id_periods_courses INT NOT NULL,
 	student_id INT NOT NULL,
 	[status] CHAR(5) NOT NULL,
+	score INT NOT NULL DEFAULT 0,
 	create_at DATETIME NOT NULL,
 	modified_at DATETIME NOT NULL
 );
 
+ 
 ALTER TABLE periods_courses_suscriptions
 ADD CONSTRAINT PK_periods_courses_suscriptions
 PRIMARY KEY(id_periods_courses,student_id),
@@ -512,3 +514,11 @@ FROM V_days
 ORDER BY NEWID();
 
 Select id from V_RandomDay;
+
+
+CREATE VIEW V_RandomSuscriptionStatus AS
+SELECT TOP 1 id
+FROM cat_suscriptions_status 
+ORDER BY NEWID();
+
+SELECT id from V_RandomSuscriptionStatus;
