@@ -590,3 +590,18 @@ END;
 SELECT [dbo].F_TotalSuscriptionByPeriodTeacher(4, 2)
 
  
+CREATE OR ALTER FUNCTION F_GetNameCourse( @Lv_course_code CHAR(10)) 
+RETURNS VARCHAR(100)
+AS 
+BEGIN
+	DECLARE @Lv_name_course VARCHAR(100);
+
+	Select @Lv_name_course = [name]
+	From [dbo].[cat_courses]
+	Where [code] = @Lv_course_code;
+
+	RETURN @Lv_name_course;
+	
+END;
+
+Select dbo.F_GetNameCourse('C005');
