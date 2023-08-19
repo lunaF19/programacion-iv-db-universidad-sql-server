@@ -605,3 +605,21 @@ BEGIN
 END;
 
 Select dbo.F_GetNameCourse('C005');
+
+
+CREATE OR ALTER FUNCTION F_GetNameCourseFromCourseXCareer( @Ln_id_courses_x_career int) 
+RETURNS VARCHAR(100)
+AS 
+BEGIN
+	DECLARE @Lv_name_course VARCHAR(100);
+
+	Select  @Lv_name_course = dbo.F_GetNameCourse(code_course)
+	From cat_courses_x_career
+	Where id = @Ln_id_courses_x_career;
+
+	RETURN @Lv_name_course;
+END;
+
+
+Select dbo.F_GetNameCourseFromCourseXCareer(4);
+
