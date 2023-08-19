@@ -484,12 +484,12 @@ BEGIN
 
 			-- Para cursor cat_courses_x_career
 			WHILE @@FETCH_STATUS = 0  
-				BEGIN 
+				BEGIN
 					
 					SET @Ln_insert_ind = CAST(RAND() * 2 AS INT) + 1;
 
 					IF ( @Ln_insert_ind = 2)
-					BEGIN
+					BEGIN TRY
 						Select @Lv_id_modality = id
 						from V_RandomModality;
 
@@ -526,12 +526,16 @@ BEGIN
 						   ,@Lv_class_room_id
 						   ,GETDATE()
 						   ,GETDATE());
-					END
+					END TRY
+					BEGIN CATCH  
+						 PRINT('FALLO')
+					END CATCH  
+
 					
 					FETCH NEXT FROM cat_courses_x_career 
 					INTO @Ln_code_course;
-				END;
-
+				END 
+			 
 			CLOSE cat_courses_x_career  
 			DEALLOCATE cat_courses_x_career  
 
