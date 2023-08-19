@@ -323,7 +323,7 @@ REFERENCES cat_courses_x_career(id)
 CREATE TABLE [periods](
 	id INT NOT NULL,
 	id_cat_period CHAR(5) NOT NULL,
-	[start_date ] DATETIME NOT NULL,
+	[start_date] DATETIME NOT NULL,
 	[end_date] DATETIME NOT NULL,
 	[description] VARCHAR(200),
 	[status] INT NOT NULL DEFAULT 0
@@ -473,3 +473,12 @@ BEGIN
 
 	Return @Ln_has_role;
 END;
+
+
+CREATE VIEW V_RandomTeacher AS
+SELECT TOP 1 id
+FROM users
+WHERE [dbo].F_UserHasRole(ID, 'TEACHE') = 1
+ORDER BY NEWID();
+
+Select * from  V_RandomTeacher
