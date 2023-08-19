@@ -6,9 +6,16 @@ CREATE DATABASE UniversityDB;
 
 USE UniversityDB;
 
-
+/*
+	Catelogo donde se guardarán las diferentes estados
+	que puede tener una suscripcion a un curso.
+	Ejemplo:
+	- Matriculado
+	- Aprobado
+	- Reprobado
+*/
 CREATE TABLE cat_suscriptions_status (
-	id  INT NOT NULL,
+	id CHAR(5) NOT NULL,
 	title VARCHAR(50) NOT NULL
 )
 ALTER TABLE cat_suscriptions_status
@@ -86,7 +93,7 @@ CREATE TABLE cat_courses(
     [code] CHAR(10) NOT NULL,
     [name] VARCHAR(100) NOT NULL,
     [description] VARCHAR(200),
-	[status] INT NOT NULL DEFAULT 0
+	[status] INT NOT NULL DEFAULT 0 -- 1 activo, 0 inactivo
     -- Department VARCHAR(100) NOT NULL,
     -- Credits INT NOT NULL,
     -- Instructor VARCHAR(100) NOT NULL,
@@ -178,7 +185,13 @@ PRIMARY KEY(id);
 -- All users
 CREATE TABLE users (
 	id INT NOT NULL,
-	last_login DATETIME NOT NULL 
+	last_login DATETIME NOT NULL,
+	[name] VARCHAR(200),
+	[last_name] VARCHAR(200),
+	[gender] CHAR(1),
+	[birts_date] DATE,
+	create_at DATETIME,
+	modified_at DATETIME
 );
 
 ALTER TABLE users
@@ -378,7 +391,7 @@ CREATE TABLE periods_courses_suscriptions(
 	id INT NOT NULL UNIQUE, -- SACAR PARA LAS NOTAS
 	id_periods_courses INT NOT NULL,
 	student_id INT NOT NULL,
-	[status] INT NOT NULL,
+	[status] CHAR(5) NOT NULL,
 	create_at DATETIME NOT NULL,
 	modified_at DATETIME NOT NULL
 );
@@ -399,4 +412,50 @@ CONSTRAINT FK03_periods_courses_suscriptions__cat_suscriptions_status
 FOREIGN KEY ([status])
 REFERENCES  cat_suscriptions_status(id)
 ;
+
+
+
+
+/*
+	Hacer tabla donde se almacene una historia de cada entidad
+
+*/
+
+
+
+
+/*
+	Recupera el id del profesor por el id del Periodo-Curso
+*/
+
+CREATE OR ALTER FUNCTION F_GetIdTeacherByPeriodsCourses (@LnPeriodsCourses  INT)
+RETURNS INT
+AS 
+BEGIN
+	DECLARE @Ln_id_teacher INT;
+
+	SELECT @Ln_id_teacher = id_teacher
+	From periods_courses
+	Where id = @LnPeriodsCourses;
+	 
+    RETURN @Ln_id_teacher;
+END; 
+
+
+/*
+	Recupera el codigo del curso por el id del Periodo-Curso
+*/
+
+CREATE OR ALTER FUNCTION F_GetCodeCourseByPeriodsCourses (@LnPeriodsCourses  INT)
+RETURNS INT
+AS 
+BEGIN
+	DECLARE @Ln_code_course INT;
+
+	SELECT @Ln_code_course = [code_course]
+	From periods_courses
+	Where id = @LnPeriodsCourses;
+	 
+    RETURN @Ln_code_course;
+END;
 
