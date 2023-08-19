@@ -522,3 +522,29 @@ FROM cat_suscriptions_status
 ORDER BY NEWID();
 
 SELECT id from V_RandomSuscriptionStatus;
+
+
+
+-- recupera el numero id del periodo apartir del id de la suscripcion
+CREATE OR ALTER FUNCTION F_GetIdPeriodOfSuscription( @Ln_id_suscription INT) 
+RETURNS INT 
+AS  
+	
+BEGIN
+	DECLARE @Ln_id_periods INT;
+
+	Select @Ln_id_periods = P.ID 
+	From periods_courses_suscriptions PCS
+	Left Join periods_courses PC
+		On PC.ID = PCS.id_periods_courses
+		Left Join [periods] P
+		On P.id = PC.id_periods
+	Where PCS.id = @Ln_id_suscription
+	Group By P.ID; 
+	 
+	return @Ln_id_periods;
+END;
+
+
+SELECT [dbo].F_GetIdPeriodOfSuscription(2584);
+
