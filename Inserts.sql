@@ -611,23 +611,28 @@ BEGIN
 								SET @Ln_score = CAST(RAND() * 60 AS INT) + 1;
 							ELSE
 								SET @Ln_score = CAST(RAND() * 100 AS INT) + 1;
-								
-							INSERT INTO [dbo].[periods_courses_suscriptions]
-									([id]
-									,[id_periods_courses]
-									,[student_id]
-									,[status]
-									,[create_at]
-									,[modified_at]
-									,[score])
-								VALUES
-									(@Ln_id_suscription
-									,@Ln_id_periods_courses
-									,@Ln_id_student_id
-									,@Ln_status_suscription 
-									,@Ld_create_at
-									,@Ld_modified_at
-									,@Ln_score);
+							BEGIN TRY
+
+								INSERT INTO [dbo].[periods_courses_suscriptions]
+										([id]
+										,[id_periods_courses]
+										,[student_id]
+										,[status]
+										,[create_at]
+										,[modified_at]
+										,[score])
+									VALUES
+										(@Ln_id_suscription
+										,@Ln_id_periods_courses
+										,@Ln_id_student_id
+										,@Ln_status_suscription 
+										,@Ld_create_at
+										,@Ld_modified_at
+										,@Ln_score);
+							END TRY
+							BEGIN CATCH
+								PRINT 'FALLO'
+							END CATCH
 						END;
 
 					FETCH c_studentes
