@@ -99,7 +99,7 @@ VALUES
     ('CAR013', 'Pedagogía', 'Estudio de métodos de enseñanza y educación.', 0),
     ('CAR014', 'Biología', 'Estudio de los seres vivos y sus procesos.', 1),
     ('CAR015', 'Ingeniería Eléctrica', 'Diseño y mantenimiento de sistemas eléctricos.', 1);
-	 
+
 -- Crea datos de las carreras, recorriendo todas las carreras y agregando materias o cursos a las mismas
 CREATE OR ALTER PROCEDURE P_RelactionBetweenCoursesXCareer 
 AS 
@@ -179,13 +179,121 @@ BEGIN
 
 END;
 
-
-
 EXEC P_RelactionBetweenCoursesXCareer;
-SELECT * FROM cat_courses_x_career;
+SELECT * FROM cat_courses_x_career; 
+
+
+ 
+
+--  Ingreso de los roles del sistema
+INSERT INTO roles(id,[name],[description])
+VALUES ('ADMIN', 'Administrator', 'Full administrative privileges.'),
+('MODER', 'Moderator', 'Moderation privileges and responsibilities.'),
+('TEACH', 'Teacher', 'Teacher of university.'),
+('STUDE', 'Student', 'Student of university.'),
+('USER', 'User', 'Standard user role with basic access.'),
+('GUEST', 'Guest', 'Limited access for guests.'),
+('MGR', 'Manager', 'Managerial role with specific privileges.');
+
+
+-- Ingreso de usuarios 
+INSERT INTO users (id, last_login, [name], last_name, [gender], birts_date, create_at, modified_at)
+VALUES
+(1, '2023-08-19 09:15:00', 'John', 'Doe', 'M', '1990-05-15', '2023-08-10 14:30:00', '2023-08-15 18:20:00'),
+(2, '2023-08-18 16:40:00', 'Emily', 'Smith', 'F', '1985-10-20', '2023-08-05 09:45:00', '2023-08-18 16:40:00'),
+(3, '2023-08-19 07:30:00', 'Michael', 'Johnson', 'M', '1995-02-12', '2023-08-01 21:10:00', '2023-08-19 07:30:00'),
+(4, '2023-08-17 11:20:00', 'Sarah', 'Williams', 'F', '1988-07-28', '2023-07-25 18:55:00', '2023-08-17 11:20:00'),
+(5, '2023-08-19 08:50:00', 'David', 'Brown', 'M', '1982-11-03', '2023-08-12 10:15:00', '2023-08-19 08:50:00'),
+(6, '2023-08-18 14:15:00', 'Jennifer', 'Davis', 'F', '1993-04-18', '2023-08-03 16:20:00', '2023-08-18 14:15:00'),
+(7, '2023-08-19 06:05:00', 'Christopher', 'Martinez', 'M', '1979-09-08', '2023-07-29 22:45:00', '2023-08-19 06:05:00'),
+(8, '2023-08-17 19:30:00', 'Jessica', 'Anderson', 'F', '1991-12-10', '2023-08-06 14:10:00', '2023-08-17 19:30:00'),
+(9, '2023-08-19 10:25:00', 'Kevin', 'Taylor', 'M', '1987-03-22', '2023-08-14 09:40:00', '2023-08-19 10:25:00'),
+(10, '2023-08-18 22:55:00', 'Amanda', 'White', 'F', '1998-06-07', '2023-08-08 11:25:00', '2023-08-18 22:55:00'),
+(11, '2023-08-19 14:30:00', 'Robert', 'Miller', 'M', '1992-09-18', '2023-08-11 09:20:00', '2023-08-19 14:30:00'),
+(12, '2023-08-18 10:40:00', 'Linda', 'Jackson', 'F', '1986-03-25', '2023-08-06 12:15:00', '2023-08-18 10:40:00'),
+(13, '2023-08-19 16:30:00', 'William', 'Brown', 'M', '1980-11-08', '2023-08-02 17:40:00', '2023-08-19 16:30:00'),
+(14, '2023-08-17 08:20:00', 'Karen', 'Wilson', 'F', '1994-07-12', '2023-07-27 14:50:00', '2023-08-17 08:20:00'),
+(15, '2023-08-19 12:50:00', 'Richard', 'Jones', 'M', '1977-02-28', '2023-08-09 11:30:00', '2023-08-19 12:50:00'),
+(16, '2023-08-18 18:15:00', 'Patricia', 'Davis', 'F', '1990-06-03', '2023-08-04 15:25:00', '2023-08-18 18:15:00'),
+(17, '2023-08-19 09:05:00', 'Charles', 'Martinez', 'M', '1983-12-14', '2023-07-30 20:10:00', '2023-08-19 09:05:00'),
+(18, '2023-08-17 14:30:00', 'Jennifer', 'Taylor', 'F', '1988-05-22', '2023-08-07 13:45:00', '2023-08-17 14:30:00'),
+(19, '2023-08-19 11:25:00', 'Daniel', 'Brown', 'M', '1996-03-02', '2023-08-13 10:55:00', '2023-08-19 11:25:00'),
+(20, '2023-08-18 08:55:00', 'Elizabeth', 'Miller', 'F', '1999-08-09', '2023-08-08 16:30:00', '2023-08-18 08:55:00'), 
+(21, '2023-08-19 15:30:00', 'Christopher', 'Clark', 'M', '1984-11-01', '2023-08-10 11:20:00', '2023-08-19 15:30:00'),
+(22, '2023-08-18 09:40:00', 'Mary', 'White', 'F', '1993-04-17', '2023-08-05 08:35:00', '2023-08-18 09:40:00'),
+(23, '2023-08-19 13:20:00', 'Matthew', 'Smith', 'M', '1989-07-06', '2023-08-01 14:45:00', '2023-08-19 13:20:00'),
+(24, '2023-08-17 17:10:00', 'Patricia', 'Johnson', 'F', '1981-02-23', '2023-07-26 12:55:00', '2023-08-17 17:10:00'),
+(25, '2023-08-19 10:45:00', 'James', 'Anderson', 'M', '1975-09-16', '2023-08-11 15:30:00', '2023-08-19 10:45:00'),
+(26, '2023-08-18 14:05:00', 'Jessica', 'Davis', 'F', '1992-05-04', '2023-08-06 13:40:00', '2023-08-18 14:05:00'),
+(27, '2023-08-19 12:15:00', 'David', 'Wilson', 'M', '1987-12-11', '2023-08-02 09:25:00', '2023-08-19 12:15:00'),
+(28, '2023-08-17 08:40:00', 'Sarah', 'Taylor', 'F', '1985-03-28', '2023-07-28 10:10:00', '2023-08-17 08:40:00'),
+(29, '2023-08-19 14:30:00', 'John', 'Brown', 'M', '1997-11-19', '2023-08-12 11:20:00', '2023-08-19 14:30:00'),
+(30, '2023-08-18 10:50:00', 'Emily', 'Miller', 'F', '1984-06-09', '2023-08-07 14:45:00', '2023-08-18 10:50:00');
 
 
 
+select * from users
 
-SELECT   ISNULL(MAX(ID),0)+1 
-					FROM cat_courses_x_career;
+CREATE OR ALTER PROCEDURE P_AddRolesToUser
+AS 
+	DECLARE c_users CURSOR FOR 
+	SELECT id
+	FROM users;
+
+	
+	DECLARE @Ln_user_id INT;
+	DECLARE @Lv_id_role CHAR(5);
+	
+BEGIN
+	
+	
+	DELETE roles_user;
+	 
+	-- Open Cursor c_users
+	OPEN c_users
+    FETCH NEXT FROM c_users 
+	INTO @Ln_user_id;
+
+
+	-- Para cursor c_users
+	 WHILE @@FETCH_STATUS = 0  
+		BEGIN 
+			DECLARE @Ln_insert_ind INT;
+			DECLARE c_roles CURSOR FOR
+			SELECT id
+			FROM roles;
+
+			-- Open Cursor c_roles
+			OPEN c_roles
+			FETCH NEXT FROM c_roles 
+			INTO @Lv_id_role;
+
+
+			-- Para cursor c_users
+			 WHILE @@FETCH_STATUS = 0  
+				BEGIN 
+
+					SET @Ln_insert_ind = CAST(RAND() * 2 AS INT) + 1;
+				
+					IF (@Ln_insert_ind = 2)
+					BEGIN 
+						INSERT INTO roles_user ( id_user , id_role)
+						VALUES (@Ln_user_id, @Lv_id_role);
+					END;
+
+					FETCH NEXT FROM c_roles 
+					INTO @Lv_id_role;
+				END;
+
+			CLOSE c_users  
+			DEALLOCATE c_users  
+
+		END
+	CLOSE c_users  
+    DEALLOCATE c_users  
+END;
+
+SELECT * FROM USERS
+WHERE CAST(RAND() * 2 AS INT) + 1 = 2
+
+select CAST(RAND() * 2 AS INT) + 1 
