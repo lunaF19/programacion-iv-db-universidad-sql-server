@@ -571,3 +571,22 @@ END;
 
 SELECT [dbo].F_TotalSuscriptionByPeriod(1, 13)
  
+
+CREATE OR ALTER FUNCTION F_TotalSuscriptionByPeriodTeacher(@ln_id_period INT, @Ln_id_teacher INT) 
+RETURNS INT 
+AS  
+BEGIN
+	DECLARE @Ln_total_of_suscrip_teacher INT;
+
+	Select @Ln_total_of_suscrip_teacher = ISNULL(count(1),0)
+	From periods_courses
+	Where id_periods = @ln_id_period
+	And id_teacher = @Ln_id_teacher
+	Group by id_periods, id_teacher;
+
+	RETURN ISNULL(@Ln_total_of_suscrip_teacher,0);
+END;
+
+SELECT [dbo].F_TotalSuscriptionByPeriodTeacher(4, 2)
+
+ 
