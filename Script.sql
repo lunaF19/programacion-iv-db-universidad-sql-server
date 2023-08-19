@@ -348,7 +348,7 @@ CREATE TABLE periods_courses (
 	id_periods INT NOT NULL ,
 	id_teacher INT NOT NULL,
 	[code_course] INT NOT NULL,
-	day_week CHAR(1) NOT NULL,
+	day_week CHAR(1) NOT NULL, -- L M K J V S D
 	start_hour CHAR(4) NOT NULL,  -- En formato militar la hora 6pm --> 1800
 	end_hour CHAR(4) NOT NULL,
 	modality CHAR(5) NOT NULL,
@@ -481,4 +481,12 @@ FROM users
 WHERE [dbo].F_UserHasRole(ID, 'TEACHE') = 1
 ORDER BY NEWID();
 
-Select * from  V_RandomTeacher
+Select id from  V_RandomTeacher;
+
+CREATE VIEW V_RandomModality AS
+SELECT TOP 1 id
+FROM cat_modality 
+ORDER BY NEWID();
+
+Select id from V_RandomModality;
+
