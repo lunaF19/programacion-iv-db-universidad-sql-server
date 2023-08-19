@@ -1,5 +1,5 @@
 USE UniversityDB;
-
+ 
 -- Ingreso de estados de suscripcion a curso
 INSERT INTO cat_suscriptions_status (id, title)
 VALUES
@@ -231,7 +231,7 @@ VALUES
 (30, '2023-08-18 10:50:00', 'Emily', 'Miller', 'F', '1984-06-09', '2023-08-07 14:45:00', '2023-08-18 10:50:00');
 
  
-
+ -- Genera la relacion de roles x usuarios aleatoriamente
 CREATE OR ALTER PROCEDURE P_AddRolesToUser
 AS 
 	DECLARE c_users CURSOR FOR 
@@ -296,14 +296,9 @@ END;
 SELECT * FROM USERS
 EXEC P_AddRolesToUser;
 SELECT * FROM roles_user;
- 
 
 
-
-
-
-
- 
+-- Genera la información sobre planes de estudio que ofrece la universidad
 CREATE OR ALTER PROCEDURE P_GenerateStudyPlans
 AS 
 	-- SELECT * FROM cat_career
@@ -410,7 +405,7 @@ SELECT * FROM study_plan;
 
 
 
-
+-- Genera la información de los periodos que se llevaron acabo
 CREATE OR ALTER PROCEDURE P_GeneratePeriods
 AS 
 	-- SELECT * FROM cat_career
@@ -445,7 +440,7 @@ SELECT * FROM [periods]
 SELECT * FROM [periods_courses]
 SELECT * FROM cat_academic_periods
 
-
+-- Genera la infomacion de los curos que se pudieron matricular en ese periodo
 CREATE OR ALTER PROCEDURE P_GeneratePeriodsCourses
 AS 
 	DECLARE c_periods CURSOR FOR
@@ -550,3 +545,4 @@ END;
 exec P_GeneratePeriodsCourses;
 SELECT * FROM [periods]
 SELECT * FROM [periods_courses]
+
