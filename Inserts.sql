@@ -414,6 +414,7 @@ AS
 
 	DECLARE @Ln_nex_id_period INT;
 BEGIN
+	DELETE periods_courses_suscriptions;
 	DELETE periods_courses;
 	DELETE [periods];
 
