@@ -490,3 +490,25 @@ ORDER BY NEWID();
 
 Select id from V_RandomModality;
 
+ 
+
+
+CREATE VIEW V_days AS
+	Select 'L' as ID
+	Union All
+	Select 'M'
+	Union All
+	Select 'K'
+	Union All
+	Select 'J'
+	Union All
+	Select 'V'
+	Union All
+	Select 'S';
+
+CREATE VIEW V_RandomDay AS
+SELECT TOP 1 id
+FROM V_days 
+ORDER BY NEWID();
+
+Select id from V_RandomDay;
