@@ -50,10 +50,10 @@ PRIMARY KEY (id);
 	 - Postgrados
 	 - Cursos Libres
 	 - Diplomas
-*/
+*/ 
 CREATE TABLE cat_academic_category (
 	id CHAR(5) NOT NULL,
-	[name] VARCHAR(20),
+	[name] VARCHAR(50),
 	[description] VARCHAR(200)
 );
 
