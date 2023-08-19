@@ -302,7 +302,7 @@ CREATE TABLE study_plan_courses(
 
 ALTER TABLE study_plan_courses
 ADD CONSTRAINT PK_study_plan_courses
-PRIMARY KEY (id_study_plan),
+PRIMARY KEY (id_study_plan, course_code),
 --
 CONSTRAINT FK01_study_plan_courses__study_plan
 FOREIGN KEY (id_study_plan)
@@ -459,3 +459,17 @@ BEGIN
     RETURN @Ln_code_course;
 END;
 
+
+
+CREATE OR ALTER FUNCTION F_UserHasRole( @Ln_id_user INT, @Lv_id_role CHAR(5) ) 
+RETURNS INT 
+AS 
+BEGIN
+	DECLARE @Ln_has_role INT = 0;
+	Select @Ln_has_role = 1
+	From roles_user
+	Where  id_user = @Ln_id_user
+	And id_role = @Lv_id_role;
+
+	Return @Ln_has_role;
+END;
