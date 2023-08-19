@@ -30,7 +30,7 @@ VALUES
     ('AC008', 'Educación Vocacional', 'Enfoque en habilidades prácticas y vocacionales.'),
     ('AC009', 'Educación Primaria', 'Los primeros años de educación formal para niños.');
 
-
+ 
 -- Ingreso de los diferentes periodos academicos
 INSERT INTO cat_academic_periods (id, [name], [description])
 VALUES
@@ -406,3 +406,147 @@ EXEC P_GenerateStudyPlans;
 
 SELECT * FROM study_plan_courses;
 SELECT * FROM study_plan;
+
+
+
+
+
+CREATE OR ALTER PROCEDURE P_GeneratePeriods
+AS 
+	-- SELECT * FROM cat_career
+
+	DECLARE @Ln_contador_while INT = 1;
+
+	DECLARE @Ln_nex_id_period INT;
+BEGIN
+	DELETE periods_courses;
+	DELETE [periods];
+
+	WHILE @Ln_contador_while < 5
+	BEGIN
+		-- Se recupera el siguiente ID
+		Select @Ln_nex_id_period = ISNULL( MAX(ID),0)+1
+		From [periods];
+		DECLARE @Lv_year VARCHAR(10) = 2018+@Ln_contador_while;
+
+	   INSERT INTO [periods]( id , id_cat_period  , [start_date]  , [end_date] , [description] , [status]   )
+	
+		VALUES ( @Ln_nex_id_period, 'AP003',  CONCAT(@Lv_year, '-01-15') , CONCAT(@Lv_year, '-04-25'), '', 1 ),
+		( @Ln_nex_id_period+1, 'AP003',  CONCAT(@Lv_year, '-05-15') , CONCAT(@Lv_year, '-08-25'), '', 1 ),
+		( @Ln_nex_id_period+2, 'AP003',  CONCAT(@Lv_year, '-09-15') , CONCAT(@Lv_year, '-12-25'), '', 1 );
+
+	   SET @Ln_contador_while = @Ln_contador_while + 1;
+	END;
+END;
+
+EXEC P_GeneratePeriods;
+
+SELECT * FROM [periods]
+SELECT * FROM [periods_courses]
+SELECT * FROM cat_academic_periods
+
+
+CREATE OR ALTER PROCEDURE P_GeneratePeriodsCourses
+AS 
+	DECLARE c_periods CURSOR FOR
+	Select id
+	From [periods];
+
+	DECLARE @Ln_id_period INT;
+	DECLARE @Ln_next_id_periods_courses INT;
+	
+BEGIN
+	DELETE periods_courses;
+	-- Open Cursor c_periods
+	OPEN c_periods
+    FETCH NEXT FROM c_periods 
+	INTO @Ln_id_period;
+
+	-- Para cursor c_periods
+	WHILE @@FETCH_STATUS = 0  
+		BEGIN  
+
+			DECLARE cat_courses_x_career CURSOR FOR
+			Select id
+			From cat_courses_x_career;
+
+			DECLARE @Lv_day_week char(1);
+			DECLARE @Lv_start_hour char(4) = '1800';
+			DECLARE @Lv_end_hour char(4) = '2000';
+			DECLARE @Ln_code_course INT = 0;
+			DECLARE @Ln_teacher INT;
+			DECLARE @Lv_class_room_id char(4) = '';
+			-- select * from cat_modality
+			DECLARE @Lv_id_modality CHAR(5);
+			DECLARE @Ln_insert_ind INT;
+			
+
+
+			OPEN cat_courses_x_career
+			FETCH NEXT FROM cat_courses_x_career 
+			INTO @Ln_code_course;
+
+			-- Para cursor cat_courses_x_career
+			WHILE @@FETCH_STATUS = 0  
+				BEGIN 
+					
+					SET @Ln_insert_ind = CAST(RAND() * 2 AS INT) + 1;
+
+					IF ( @Ln_insert_ind = 2)
+					BEGIN
+						Select @Lv_id_modality = id
+						from V_RandomModality;
+
+						Select @Ln_teacher = id 
+						from  V_RandomTeacher;
+
+						Select @Lv_day_week = id 
+						from V_RandomDay;
+
+						SELECT @Ln_next_id_periods_courses =ISNULL(MAX(ID),0)+1
+						From periods_courses;
+
+					INSERT INTO [dbo].[periods_courses]
+						   ([id]
+						   ,[id_periods]
+						   ,[id_teacher]
+						   ,[code_course]
+						   ,[day_week]
+						   ,[start_hour]
+						   ,[end_hour]
+						   ,[modality]
+						   ,[class_room_id]
+						   ,[modified_at]
+						   ,[create_at])
+					 VALUES
+						   (@Ln_next_id_periods_courses
+						   ,@Ln_id_period
+						   ,@Ln_teacher
+						   ,@Ln_code_course
+						   ,@Lv_day_week
+						   ,@Lv_start_hour
+						   ,@Lv_end_hour
+						   ,@Lv_id_modality
+						   ,@Lv_class_room_id
+						   ,GETDATE()
+						   ,GETDATE());
+					END
+					
+					FETCH NEXT FROM cat_courses_x_career 
+					INTO @Ln_code_course;
+				END;
+
+			CLOSE cat_courses_x_career  
+			DEALLOCATE cat_courses_x_career  
+
+			FETCH NEXT FROM c_periods 
+			INTO @Ln_id_period;
+		END;
+
+	CLOSE c_periods  
+    DEALLOCATE c_periods  
+END;
+
+exec P_GeneratePeriodsCourses;
+SELECT * FROM [periods]
+SELECT * FROM [periods_courses]
