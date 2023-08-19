@@ -548,3 +548,26 @@ END;
 
 SELECT [dbo].F_GetIdPeriodOfSuscription(2584);
 
+
+-- Apartir del id del periodo y el id del estudiante se retorna el total de cursos registrados
+CREATE OR ALTER FUNCTION F_TotalSuscriptionByPeriod(@ln_id_period INT, @Ln_id_student INT) 
+RETURNS INT 
+AS  
+BEGIN
+	DECLARE @Ln_total_suscriptions INT;
+
+	Select @Ln_total_suscriptions = ISNULL(count(1),0)
+	From [periods] P
+		Right Join periods_courses PC
+		 Right Join periods_courses_suscriptions PCS
+		 On PCS.id_periods_courses = PC.id
+		 And PCS.student_id = @Ln_id_student
+		On PC.id_periods = P.id
+	Where P.id = @ln_id_period;
+
+	RETURN @Ln_total_suscriptions;
+
+END;
+
+SELECT [dbo].F_TotalSuscriptionByPeriod(1, 13)
+ 
