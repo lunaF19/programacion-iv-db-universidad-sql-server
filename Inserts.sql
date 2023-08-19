@@ -360,19 +360,31 @@ BEGIN
 			FETCH NEXT FROM cat_courses_x_career 
 			INTO @Ln_id_courses_x_career;
 
+			DECLARE @Ln_num_block INT = 0;
+			DECLARE @Ln_num_order INT = 0;
+
 			-- Para cursor cat_courses_x_career
 			WHILE @@FETCH_STATUS = 0  
 				BEGIN 
+					
 					DECLARE @Ln_credits INT;
 
 					SET @Ln_credits = CAST(RAND() * 4 AS INT) + 1;
+
+					IF ( @Ln_num_order >= 4) 
+						BEGIN
+							SET @Ln_num_block = @Ln_num_block +1;
+							SET @Ln_num_order = 0;
+						END;
+					ELSE 
+						SET @Ln_num_order = @Ln_num_order+1;
 
 					INSERT INTO study_plan_courses( id_study_plan, course_code, [block], [order], create_at, credits )
 					VALUES (
 						@Ln_id_study_plan,
 						@Ln_id_courses_x_career,
-						0, -- [block]
-						0, --[order]
+						@Ln_num_block, -- [block]
+						@Ln_num_order, --[order]
 						GETDATE(),--create_at
 						@Ln_credits-- credits
 					);
