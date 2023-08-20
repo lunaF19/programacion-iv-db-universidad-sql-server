@@ -386,14 +386,14 @@ REFERENCES cat_modality(id);
 	En esta tabla se almacenarán datos relevantes tales como el estudiante
 	relacionado este con la nota que obtuvo y el status(matriculado,aprobado,etc)
 
-*/ 
- 
+*/
+
 CREATE TABLE periods_courses_suscriptions(
 	id INT NOT NULL UNIQUE, -- SACAR PARA LAS NOTAS
 	id_periods_courses INT NOT NULL,
 	student_id INT NOT NULL,
 	[status] CHAR(5) NOT NULL,
-	score decimal(18, 0) NOT NULL DEFAULT 0,
+	score decimal(18,5) NOT NULL DEFAULT 0,
 	create_at DATETIME NOT NULL,
 	modified_at DATETIME NOT NULL
 );
