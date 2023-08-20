@@ -435,6 +435,50 @@ CONSTRAINT FK02_study_plan_suscriptions__users
 FOREIGN KEY (id_student)
 REFERENCES users(id);
 
+
+
+CREATE TABLE performance_evaluation(
+	id INT NOT NULL,
+	id_user INT NOT NULL,
+	[start_date] DATETIME ,
+	[end_date] DATETIME ,
+	create_at DATETIME NOT NULL,
+	modified_at DATETIME NOT NULL
+);
+
+
+ALTER TABLE performance_evaluation
+ADD CONSTRAINT PK_performance_evaluation
+PRIMARY KEY(id),
+
+CONSTRAINT FK01_performance_evaluation__users
+FOREIGN KEY (id_user)
+REFERENCES users(id);
+
+ 
+CREATE TABLE performance_evaluation_details(
+	id_performance_evaluation  INT NOT NULL,
+	[sequence] INT NOT NULL,
+	id_user INT NOT NULL,
+	comment VARCHAR(2000),
+	score INT NOT NULL DEFAULT 0
+);
+
+ALTER TABLE performance_evaluation_details
+ADD CONSTRAINT PK_performance_evaluation_details
+PRIMARY KEY(id_performance_evaluation, [sequence]),
+
+CONSTRAINT FK01_performance_evaluation__details
+FOREIGN KEY (id_performance_evaluation)
+REFERENCES performance_evaluation(id),
+
+CONSTRAINT FK02_performance_evaluation__users
+FOREIGN KEY (id_user)
+REFERENCES users(id);
+
+
+
+
 /*
 	Hacer tabla donde se almacene una historia de cada entidad
 
