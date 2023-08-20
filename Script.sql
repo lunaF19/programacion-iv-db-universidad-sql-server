@@ -456,13 +456,13 @@ CONSTRAINT FK01_performance_evaluation__users
 FOREIGN KEY (id_user)
 REFERENCES users(id);
 
- 
+  
 CREATE TABLE performance_evaluation_details(
 	id_performance_evaluation  INT NOT NULL,
 	[sequence] INT NOT NULL,
 	id_user INT NOT NULL,
 	comment VARCHAR(2000),
-	score INT NOT NULL DEFAULT 0
+	score decimal(18,5) NOT NULL DEFAULT 0
 );
 
 ALTER TABLE performance_evaluation_details
