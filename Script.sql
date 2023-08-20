@@ -414,24 +414,7 @@ CONSTRAINT FK03_periods_courses_suscriptions__cat_suscriptions_status
 FOREIGN KEY ([status])
 REFERENCES  cat_suscriptions_status(id)
 ;
- 
-CREATE TABLE career_suscriptions(
-	[career_code] CHAR(10)  NOT NULL,
-	id_student INT NOT NULL,
-	[status]  INT not null, -- 0 inactiva, 1 activa, 2 completada
-	create_at DATETIME NOT NULL
-);
-
-
-ALTER TABLE career_suscriptions
-ADD CONSTRAINT PK_career_suscriptions
-PRIMARY KEY ([career_code],id_student),
-CONSTRAINT FK01_career_suscriptions__cat_courses
-FOREIGN KEY ([career_code])
-REFERENCES cat_career([code]),
-CONSTRAINT FK02_career_suscriptions__users
-FOREIGN KEY (id_student)
-REFERENCES users(id);
+  
 
 /*
 	Hacer tabla donde se almacene una historia de cada entidad

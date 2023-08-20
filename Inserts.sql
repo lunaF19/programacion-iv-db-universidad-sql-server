@@ -677,26 +677,3 @@ END;
 EXEC P_GeneratePeriodsCoursesSuscriptions;
 select * from periods_courses_suscriptions
  
-
-
-CREATE OR ALTER PROCEDURE P_GenerateCareerSuscriptions
-AS 
-BEGIN
-	DELETE career_suscriptions;
-
-	INSERT INTO career_suscriptions( [career_code], id_student, [status], create_at  )
-	Select  CCC.code_career, PCS.student_id, 1, MIN(P.[start_date ])
-	From periods_courses_suscriptions PCS
-	Left Join periods_courses PC 
-		Left Join  [periods] P 
-		On P.id = PC.id_periods
-	On PC.id  = PCS.id_periods_courses
-	Left Join cat_courses_x_career CCC
-	On CCC.id = PC.code_course
-	Group By PCS.student_id, CCC.code_career;
-
-
-END;
-
-EXEC P_GenerateCareerSuscriptions;
-SELECT * FROM career_suscriptions;
