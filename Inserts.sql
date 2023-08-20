@@ -498,7 +498,7 @@ BEGIN
 			WHILE @@FETCH_STATUS = 0  
 				BEGIN
 					
-					SET @Ln_insert_ind = CAST(RAND() * 2 AS INT) + 1;
+					SET @Ln_insert_ind = CAST(RAND() * 4 AS INT) + 1;
 
 					IF ( @Ln_insert_ind = 2)
 					BEGIN TRY
@@ -620,9 +620,9 @@ BEGIN
 							From V_RandomSuscriptionStatus;
 
 							IF (@Ln_status_suscription = 'C')
-								SET @Ln_score = CAST(RAND() * 60 AS INT) + 1;
+								SET @Ln_score = CAST(RAND() * 60 AS DECIMAL(18,5)) + 1;
 							ELSE
-								SET @Ln_score = CAST(RAND() * 100 AS INT) + 1;
+								SET @Ln_score = CAST(RAND() * 100 AS DECIMAL(18,5)) + 1;
 							BEGIN TRY
 
 								INSERT INTO [dbo].[periods_courses_suscriptions]
@@ -665,11 +665,9 @@ BEGIN
 	SET [status] = 'A'
 	WHERE SCORE >= 70; 
 
-
 	UPDATE periods_courses_suscriptions 
 	SET [status] = 'R'
 	WHERE SCORE < 70; 
-
 
 END;
 
@@ -740,7 +738,7 @@ BEGIN
 				From [performance_evaluation_details]
 				Where @Ln_id_performance_valuation =  @Ln_id_performance_valuation;
 
-				SET @Ln_score = CAST(RAND() * 5 AS INT) + 1;
+				SET @Ln_score = CAST(RAND() * 5 AS DECIMAL(18,5)) + 1;
 
 				INSERT INTO [dbo].[performance_evaluation_details]
 					   ([id_performance_evaluation]
