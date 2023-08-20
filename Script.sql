@@ -386,13 +386,14 @@ REFERENCES cat_modality(id);
 	En esta tabla se almacenarán datos relevantes tales como el estudiante
 	relacionado este con la nota que obtuvo y el status(matriculado,aprobado,etc)
 
-*/
+*/ 
+ 
 CREATE TABLE periods_courses_suscriptions(
 	id INT NOT NULL UNIQUE, -- SACAR PARA LAS NOTAS
 	id_periods_courses INT NOT NULL,
 	student_id INT NOT NULL,
 	[status] CHAR(5) NOT NULL,
-	score INT NOT NULL DEFAULT 0,
+	score decimal(18, 0) NOT NULL DEFAULT 0,
 	create_at DATETIME NOT NULL,
 	modified_at DATETIME NOT NULL
 );
@@ -414,7 +415,6 @@ CONSTRAINT FK03_periods_courses_suscriptions__cat_suscriptions_status
 FOREIGN KEY ([status])
 REFERENCES  cat_suscriptions_status(id)
 ;
-select * from study_plan
 
 
 CREATE TABLE study_plan_suscriptions(
