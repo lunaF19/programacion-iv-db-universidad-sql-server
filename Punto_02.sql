@@ -119,3 +119,100 @@ END;
 
 EXEC P_GetEstudentCourseHistory 21, '2021', '2020';
 
+
+
+CREATE OR ALTER PROCEDURE P_GetMissingCourses
+@Ln_id_student INT
+AS
+	DECLARE c_study_plan_suscriptions CURSOR FOR
+	Select id_study_plan, 
+		SP.[title] AS plan_study_title, 
+		SP.[description] as plan_study_description
+	From study_plan_suscriptions SPS
+	Left Join study_plan SP
+		On SP.id = SPS.id_study_plan
+	Where SPS.id_student= @Ln_id_student;
+
+	DECLARE @Lv_study_plan_code INT;
+	DECLARE @Lv_study_plan_title VARCHAR(200);
+	DECLARE @Lv_study_plan_description CHAR(400);
+
+	DECLARE @Lv_student_name VARCHAR(400);
+BEGIN  
+	SET @Lv_student_name = dbo.F_GetCompleteNameUser(@Ln_id_student);
+
+	OPEN c_study_plan_suscriptions
+	FETCH c_study_plan_suscriptions
+	INTO @Lv_study_plan_code, @Lv_study_plan_title, @Lv_study_plan_description;
+
+
+	PRINT CONCAT('Cursos pendientes de ',@Lv_student_name)
+	-- Para cursor carrer_suscriptions
+	WHILE @@FETCH_STATUS = 0  
+		BEGIN
+			
+			PRINT CONCAT(@Lv_study_plan_code, ' - ', @Lv_study_plan_title)
+			
+
+
+			DECLARE c_cursos_pendiente CURSOR FOR
+			Select SPC.course_code AS id_course,
+				CCC.code_course,
+				CCC.code_course,
+				dbo.F_GetNameCourse(code_course) as course_name,
+				SPC.credits     --course_code
+			From study_plan_courses SPC
+			Left Join cat_courses_x_career CCC
+			On CCC.id = SPC.course_code
+			Where id_study_plan = @Lv_study_plan_code
+			And course_code NOT IN (
+				Select PC.code_course
+				From periods_courses_suscriptions PCS
+				Left Join periods_courses PC
+				On PC.id  = PCS.id_periods_courses
+				Where  PCS.[status] = 'A'
+				And PCS.[student_id] = @Ln_id_student
+			)
+			Order by SPC.[block], SPC.[order];
+
+			DECLARE @Ln_course_id INT;
+			DECLARE @Ln_course_code char(10);
+			DECLARE @Ln_career_code char(10);
+			DECLARE @Lv_course_name VARCHAR(400);
+			DECLARE @Lv_course_credits INT;
+
+			DECLARE @Ln_contador INT = 0;
+
+			OPEN c_cursos_pendiente
+			FETCH c_cursos_pendiente
+			INTO @Ln_course_id, @Ln_course_code,@Ln_career_code, @Lv_course_name, @Lv_course_credits;
+
+			-- Para cursor c_cursos_pendiente
+			WHILE @@FETCH_STATUS = 0
+				BEGIN 
+					SET @Ln_contador = @Ln_contador +1;
+					PRINT CONCAT(CHAR(9), @Lv_course_name, ' creditos necesarios: ', @Lv_course_credits)
+					FETCH c_cursos_pendiente
+					INTO @Ln_course_id, @Ln_course_code,@Ln_career_code, @Lv_course_name, @Lv_course_credits;
+				END
+			
+			CLOSE c_cursos_pendiente  
+			DEALLOCATE c_cursos_pendiente 
+
+			PRINT '__________________________'
+			PRINT CONCAT('Un total de ',@Ln_contador,' curso(s) pendiente(s) para ',@Lv_course_name,'.')
+			PRINT '__________________________'
+
+			SET @Ln_contador= 0
+			FETCH c_study_plan_suscriptions
+			INTO @Lv_study_plan_code, @Lv_study_plan_title, @Lv_study_plan_description;
+		END
+
+
+	CLOSE c_study_plan_suscriptions  
+	DEALLOCATE c_study_plan_suscriptions 
+END;
+
+
+EXEC P_GetMissingCourses 21;
+ 
