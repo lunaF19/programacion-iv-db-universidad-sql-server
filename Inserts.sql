@@ -702,3 +702,136 @@ END;
 
 EXEC P_GenerateStudyPlanSuscriptions;
 Select * from study_plan_suscriptions;
+
+
+
+
+
+CREATE OR ALTER PROCEDURE P_GeneratePerformanceEvaluationDetails
+@Ln_id_performance_valuation INT,
+@Ln_id_user INT
+AS 
+	DECLARE c_reviwer CURSOR FOR
+	Select id
+	From Users
+	Where id <> @Ln_id_user;
+
+	DECLARE @Ln_id_performance_evaluatio INT;
+	DECLARE @Ln_total_inserts INT;
+	DECLARE @Ln_id_user_reviewer INT;
+	DECLARE @Ln_next_sequense INT;
+	DECLARE @Ln_score DECIMAL;
+	DECLARE @Ln_insert_review INT;
+
+BEGIN
+	
+
+	OPEN c_reviwer
+	FETCH c_reviwer
+	INTO @Ln_id_user_reviewer;
+
+	-- Para cursor c_reviwer
+	WHILE @@FETCH_STATUS = 0  
+		BEGIN
+			SET @Ln_insert_review = CAST(RAND() * 4 AS INT) + 1;
+			IF ( @Ln_insert_review = 3)
+			BEGIN
+				Select  @Ln_next_sequense = ISNULL(MAX([sequence]) ,0)+1
+				From [performance_evaluation_details]
+				Where @Ln_id_performance_valuation =  @Ln_id_performance_valuation;
+
+				SET @Ln_score = CAST(RAND() * 5 AS INT) + 1;
+
+				INSERT INTO [dbo].[performance_evaluation_details]
+					   ([id_performance_evaluation]
+					   ,[sequence]
+					   ,[id_user]
+					   ,[comment]
+					   ,[score])
+				 VALUES
+					   (@Ln_id_performance_valuation
+					   ,@Ln_next_sequense
+					   ,@Ln_id_user_reviewer
+					   ,CONCAT(' user ', @Ln_id_user_reviewer, ' review over evaluation ', @Ln_id_performance_valuation)
+					   ,@Ln_score);
+			END
+			FETCH c_reviwer
+			INTO @Ln_id_user_reviewer;
+		END;
+
+	CLOSE c_reviwer
+	DEALLOCATE c_reviwer
+END;
+
+
+
+CREATE OR ALTER PROCEDURE P_GeneratePerformanceEvaluation
+AS 
+	DECLARE c_teachers CURSOR FOR
+	Select id
+	From Users
+	Where [dbo].F_UserHasRole(id, 'TEACHER') = 1;
+
+	DECLARE @Ln_id_performance_evaluatio INT;
+	DECLARE @Ln_total_inserts INT;
+	DECLARE @Ln_id_teacher INT;
+
+BEGIN
+	DELETE [performance_evaluation_details];
+	DELETE [performance_evaluation];
+	
+
+	OPEN c_teachers
+	FETCH c_teachers
+	INTO @Ln_id_teacher;
+
+	-- Para cursor c_teachers
+	WHILE @@FETCH_STATUS = 0  
+		BEGIN
+			SET @Ln_total_inserts = CAST(RAND() * 10 AS INT) + 1;
+
+
+
+			WHILE @Ln_total_inserts > 0
+				BEGIN
+					Select @Ln_id_performance_evaluatio = ISNULL(MAX(id),0)+1
+					From performance_evaluation;
+
+					INSERT INTO [dbo].[performance_evaluation]
+						([id]
+						,[id_user]
+						,[start_date]
+						,[end_date]
+						,[create_at]
+						,[modified_at]
+						,[reason])
+					VALUES
+						(@Ln_id_performance_evaluatio
+						,@Ln_id_teacher
+						,GETDATE()
+						,GETDATE()
+						,GETDATE()
+						,GETDATE()
+						, 'data generada para el ejemplo');
+
+					SET @Ln_total_inserts = @Ln_total_inserts -1;
+					EXEC P_GeneratePerformanceEvaluationDetails @Ln_id_performance_evaluatio, @Ln_id_teacher;
+
+				END
+
+
+			FETCH c_teachers
+			INTO @Ln_id_teacher;
+		END;
+
+	CLOSE c_teachers  
+	DEALLOCATE c_teachers   
+
+	
+END;
+
+
+
+EXEC P_GeneratePerformanceEvaluation;
+Select * From [performance_evaluation];
+Select * From [performance_evaluation_details];
