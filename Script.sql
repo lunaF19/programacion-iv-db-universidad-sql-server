@@ -443,7 +443,8 @@ CREATE TABLE performance_evaluation(
 	[start_date] DATETIME ,
 	[end_date] DATETIME ,
 	create_at DATETIME NOT NULL,
-	modified_at DATETIME NOT NULL
+	modified_at DATETIME NOT NULL,
+	reason VARCHAR(2000)
 );
 
 
