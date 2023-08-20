@@ -414,7 +414,26 @@ CONSTRAINT FK03_periods_courses_suscriptions__cat_suscriptions_status
 FOREIGN KEY ([status])
 REFERENCES  cat_suscriptions_status(id)
 ;
-  
+select * from study_plan
+
+
+CREATE TABLE study_plan_suscriptions(
+	id_study_plan INT NOT NULL,
+	id_student INT NOT NULL,
+	[status]  INT not null, -- 0 inactiva, 1 activa, 2 completada
+	create_at DATETIME NOT NULL
+);
+
+
+ALTER TABLE study_plan_suscriptions
+ADD CONSTRAINT PK_study_plan_suscriptions
+PRIMARY KEY (id_study_plan, id_student),
+CONSTRAINT FK01_study_plan_suscriptions__S
+FOREIGN KEY (id_study_plan)
+REFERENCES study_plan(id),
+CONSTRAINT FK02_study_plan_suscriptions__users
+FOREIGN KEY (id_student)
+REFERENCES users(id);
 
 /*
 	Hacer tabla donde se almacene una historia de cada entidad
