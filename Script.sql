@@ -623,3 +623,19 @@ END;
 
 Select dbo.F_GetNameCourseFromCourseXCareer(4);
 
+
+
+CREATE OR ALTER FUNCTION F_GetCompleteNameUser( @Ln_id_user int) 
+RETURNS VARCHAR(400)
+AS 
+BEGIN
+	DECLARE @Lv_complete_name VARCHAR(400);
+
+	Select @Lv_complete_name = Concat([name], ' ', last_name)
+	From users
+	Where id = @Ln_id_user;
+
+	RETURN @Lv_complete_name;
+END;
+
+Select dbo.F_GetCompleteNameUser(1);
