@@ -677,3 +677,28 @@ END;
 EXEC P_GeneratePeriodsCoursesSuscriptions;
 select * from periods_courses_suscriptions
  
+  
+CREATE OR ALTER PROCEDURE P_GenerateStudyPlanSuscriptions
+AS 
+BEGIN
+	DELETE study_plan_suscriptions;
+	 
+	INSERT INTO study_plan_suscriptions( id_study_plan, id_student, [status], create_at  )
+	Select  SPC.id_study_plan, PCS.student_id, 1, MIN(P.[start_date ])
+	From periods_courses_suscriptions PCS
+	Left Join periods_courses PC 
+		Left Join  [periods] P 
+		On P.id = PC.id_periods
+		Left Join study_plan_courses SPC
+		On SPC.course_code = PC.code_course
+	On PC.id  = PCS.id_periods_courses
+	Left Join cat_courses_x_career CCC
+	On CCC.id = PC.code_course
+	Group By PCS.student_id, SPC.id_study_plan
+	Having SPC.id_study_plan is not null;
+
+
+END;
+
+EXEC P_GenerateStudyPlanSuscriptions;
+Select * from study_plan_suscriptions;
